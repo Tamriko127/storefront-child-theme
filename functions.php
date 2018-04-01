@@ -18,6 +18,14 @@ function sf_child_theme_dequeue_style() {
 	wp_dequeue_style( 'storefront-style' );
 	wp_dequeue_style( 'storefront-woocommerce-style' );
 }
+add_action( 'wp_enqueue_scripts', 'artabr_script' );
+function artabr_script() {
+	
+	wp_enqueue_script( 'custom', get_stylesheet_directory_uri() . '/assets/js/custom-js.js', array('jquery'), null, true );
+	wp_enqueue_script( 'magnific', get_stylesheet_directory_uri() . '/assets/js/jquery.magnific-popup.min.js', array('jquery'), null, true );
+	wp_enqueue_style( 'magnific-popup', get_stylesheet_directory_uri() . '/assets/css/magnific-popup.css');
+
+}
 
 /**
  * Note: DO NOT! alter or remove the code above this text and only add your custom PHP functions below this text.
@@ -53,6 +61,58 @@ function artabr_unset_accunt($links){
 	unset( $links['my-account'] );
 	return $links;
 }
+//remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+/*add_filter( 'woocommerce_product_single_add_to_cart_text', 'artabr_change_add_to_cart_text' );
+function artabr_change_add_to_cart_text($text){
+$text = 'Заказать';
+return $text;
+}*/
+/*add_filter( 'woocommerce_add_to_cart_form_action', 'artabr_remove_form_action');
+function artabr_remove_form_action($url){
+	echo '<pre>';
+	print_r ($url);
+	echo '</pre>';
+}*/
+add_action( 'woocommerce_after_add_to_cart_button', 'artabr_add_custom_button' );
+function artabr_add_custom_button(){
+	global $product;
+	?>
+	<a href="#form-custom-order" data-value-product-id="<?php echo esc_attr( $product->get_id() ); ?>" class="custom-order button alt">Заказать</a>
+
+	<?php
+}
+add_action( 'wp_footer', 'artabr_form_custom_order' );
+function artabr_form_custom_order(){
+	global $product;
+	
+	if (!is_product()){
+		return;
+		
+	}
+	
+	$product_var = new WC_Product_Variable($product->get_id());
+	$product_var_attrs = implode(',', $product_var->get_available_variations()[0]['attributes']);
+
+	?>
+	<div id="form-custom-order" class="form-custom-order-footer mfp-hide">
+		<?php //echo esc_attr( $product->get_id() );
+		$post_thumbnail_id = get_post_thumbnail_id( $product->get_id() );
+		$full_size_image   = wp_get_attachment_image_src( $post_thumbnail_id, 'shop_thumbnail' );
+		echo $full_size_image[0];
+		echo $product->get_title();
+		echo $product->get_price_html();
+
+
+		?>
+		<div class="form-custom-order-title"><?php echo $product->get_title(); ?></div>
+		<div class="form-custom-order-attr"><?php echo $product_var_attrs; ?></div>
+		
+		<?php echo do_shortcode('[contact-form-7 id="19" title="Страница контактов"]');?>
+	
+	</div>
+	<?php
+}
+
 
 
 

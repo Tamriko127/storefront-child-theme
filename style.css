@@ -27,3 +27,14 @@ Images License: GNU General Public License v2 or later
     font-size: 1.5rem;
     font-weight: bold;
 }
+.single_add_to_cart_button,
+input.qty{display: none;
+}
+.form-custom-order-footer{
+    position: relative;
+    background: #FFF;
+    padding: 20px;
+    width: auto;
+    max-width: 500px;
+    margin: 20px auto;
+}
